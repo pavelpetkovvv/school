@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.school.management.dto.PageResult;
 import com.school.management.models.Course;
 import com.school.management.models.Student;
+import com.school.management.models.Teacher;
 import com.school.management.services.CoursesService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,6 +46,13 @@ public class CoursesController {
     public List<Student> getStudents(@PathVariable UUID id, @RequestParam(required = false) String group,
             @RequestParam(required = false) Integer minAge) {
         return coursesService.getStudents(id, group, minAge);
+    }
+
+    @Operation(summary = "Get teachers of a course", description = "Retrieves a list of teachers assigned to a course, optionally filtered by group and minimum age")
+    @GetMapping("/{id}/teachers")
+    public List<Teacher> getTeachers(@PathVariable UUID id, @RequestParam(required = false) String group,
+            @RequestParam(required = false) Integer minAge) {
+        return coursesService.getTeachers(id, group, minAge);
     }
 
     @Operation(summary = "Add students to course", description = "Adds a list of students to the course with the given ID")

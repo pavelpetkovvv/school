@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.school.management.dto.PageResult;
 import com.school.management.models.Course;
 import com.school.management.models.Student;
+import com.school.management.models.Teacher;
 
 /**
  * Service interface for managing courses in the school management system.
@@ -17,8 +18,8 @@ public interface CoursesService {
      * Retrieves a paginated list of courses matching the provided example probe.
      *
      * @param probe The example course to filter results.
-     * @param size The number of results per page.
-     * @param page The page number to retrieve.
+     * @param size  The number of results per page.
+     * @param page  The page number to retrieve.
      * @return A page result containing the list of matching courses.
      */
     PageResult<Course> getAll(Course probe, Integer size, Integer page);
@@ -46,22 +47,34 @@ public interface CoursesService {
      * @param id The ID of the course to delete.
      */
     void delete(UUID id);
-    
+
     /**
-     * Retrieves a list of students enrolled in the given course, optionally filtered by group and minimum age.
+     * Retrieves a list of students enrolled in the given course, optionally
+     * filtered by group and minimum age.
      *
      * @param courseId The ID of the course.
-     * @param group The group name to filter by (optional).
-     * @param minAge The minimum age to filter by (optional).
+     * @param group    The group name to filter by (optional).
+     * @param minAge   The minimum age to filter by (optional).
      * @return A list of matching students.
      */
     List<Student> getStudents(UUID courseId, String group, Integer minAge);
 
     /**
+     * Retrieves a list of teachers assigned to the given course, optionally
+     * filtered by group and minimum age.
+     *
+     * @param courseId The ID of the course.
+     * @param group    The group name to filter by (optional).
+     * @param minAge   The minimum age to filter by (optional).
+     * @return A list of matching students.
+     */
+    List<Teacher> getTeachers(UUID courseId, String group, Integer minAge);
+
+    /**
      * Enrolls a list of students into a course.
      *
      * @param studentIds The list of student IDs to enroll.
-     * @param id The ID of the course.
+     * @param id         The ID of the course.
      * @return The updated course with enrolled students.
      */
     Course enrollStudentsInCourse(List<UUID> studentIds, UUID id);
@@ -70,7 +83,7 @@ public interface CoursesService {
      * Removes a list of students from a course.
      *
      * @param studentIds The list of student IDs to remove.
-     * @param id The ID of the course.
+     * @param id         The ID of the course.
      * @return The updated course after deregistration.
      */
     Course deregisterStudentsFromCourse(List<UUID> studentIds, UUID id);
@@ -79,7 +92,7 @@ public interface CoursesService {
      * Assigns teachers to a course.
      *
      * @param teacherIds The list of teacher IDs to assign.
-     * @param id The ID of the course.
+     * @param id         The ID of the course.
      * @return The updated course with assigned teachers.
      */
     Course assignTeachersToCourse(List<UUID> teacherIds, UUID id);
@@ -88,7 +101,7 @@ public interface CoursesService {
      * Deregisters teachers from a course.
      *
      * @param teacherIds The list of teacher IDs to deregister.
-     * @param id The ID of the course.
+     * @param id         The ID of the course.
      * @return The updated course after teacher deregistration.
      */
     Course deregisterTeachersFromCourse(List<UUID> teacherIds, UUID id);

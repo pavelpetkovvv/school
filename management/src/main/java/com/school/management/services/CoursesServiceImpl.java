@@ -1,6 +1,6 @@
 package com.school.management.services;
 
-import static com.school.management.constants.ErrorMessageTemplate.*;
+import static com.school.management.constants.ErrorMessageTemplate.CANNOT_DELETE_COURSE_WITH_STUDENTS;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +20,7 @@ import com.school.management.models.Teacher;
 import com.school.management.repositories.CoursesRepository;
 import com.school.management.repositories.StudentSpecifications;
 import com.school.management.repositories.StudentsRepository;
+import com.school.management.repositories.TeacherSpecifications;
 import com.school.management.repositories.TeachersRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -71,6 +72,22 @@ public class CoursesServiceImpl implements CoursesService {
         }
 
         return studentsRepository.findAll(spec);
+    }
+
+    @Override
+    public List<Teacher> getTeachers(UUID courseId, String group, Integer minAge) {
+        Specification<Teacher> spec = (root, query, criteriaBuilder) -> TeacherSpecifications.hasCourseId(courseId)
+                .toPredicate(root, query, criteriaBuilder);
+
+        if (group != null) {
+            spec = spec.and(TeacherSpecifications.hasGroup(group));
+        }
+
+        if (minAge != null) {
+            spec = spec.and(TeacherSpecifications.isOlderThan(minAge));
+        }
+
+        return teachersRepository.findAll(spec);
     }
 
     @Override
