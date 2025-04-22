@@ -370,4 +370,61 @@ public class CoursesControllerTests {
                                 .andExpect(jsonPath("$.items[0].teachers.length()").value(0));
         }
 
+        @Test
+        void shouldGetTeachersForCourse() throws Exception {
+                // Add a course
+                Course course = new Course();
+                course.setName("Math 101");
+                course.setCourseType(CourseType.MAIN);
+
+                String courseResponse = mockMvc.perform(post(COURSES_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(course)))
+                                .andExpect(status().isOk())
+                                .andReturn().getResponse().getContentAsString();
+
+                Course createdCourse = objectMapper.readValue(courseResponse, Course.class);
+
+                // Add a teacher
+                Teacher teacher1 = new Teacher();
+                teacher1.setName("John Doe");
+                teacher1.setAge(20);
+                teacher1.setGroup("Group A");
+
+                Teacher teacher2 = new Teacher();
+                teacher2.setName("John Doe");
+                teacher2.setAge(20);
+                teacher2.setGroup("Group B");
+
+                String teacherResponse1 = mockMvc.perform(post(TEACHERS_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(teacher1)))
+                                .andExpect(status().isOk())
+                                .andReturn().getResponse().getContentAsString();
+
+                Teacher createdTeacher1 = objectMapper.readValue(teacherResponse1, Teacher.class);
+
+                String teacherResponse2 = mockMvc.perform(post(TEACHERS_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(teacher2)))
+                                .andExpect(status().isOk())
+                                .andReturn().getResponse().getContentAsString();
+
+                Teacher createdTeacher2 = objectMapper.readValue(teacherResponse2, Teacher.class);
+
+                // Enroll both teachers in the course
+                mockMvc.perform(post(COURSES_URL + "/" + createdCourse.getId() + "/teachers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(
+                                                List.of(createdTeacher1.getId(), createdTeacher2.getId()))))
+                                .andExpect(status().isOk());
+
+                // Fetch teachers for the course
+                mockMvc.perform(get(COURSES_URL + "/" + createdCourse.getId() + "/teachers")
+                                .param("group", "Group A") // Optional filters
+                                .param("minAge", "18"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.length()").value(1)) // Check that there is only one teacher
+                                .andExpect(jsonPath("$[0].name").value("John Doe"));
+        }
 }
